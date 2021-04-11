@@ -4,8 +4,13 @@
     <hr class="text-light">
 
     <div class="list-group list-reset">
-        <a href="" class="list-group-item list-group-item-action">
-            Dashboard
+        <a 
+            *ngFor="let item of historialToSideBar"
+            href="" 
+            class="list-group-item list-group-item-action"
+        >
+            {{item | titlecase}}
         </a>
+        <!-- {{item | titlecase}} lo pone en mayuscula la primera -->
     </div>
 </div>
