@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Data, SearchGifsResponse } from '../interface/gifs.interface';
 
@@ -6,6 +6,9 @@ import { Data, SearchGifsResponse } from '../interface/gifs.interface';
   providedIn: 'root'
 })
 export class GifsService {
+
+  private apiKey: string = "CFZ9grM87gaiStZ3XycDqRsjc9f1Bv5p";
+  private servicioUrl: string = "https://api.giphy.com/v1/gifs";
 
   private _historial: string[] = [];
 
@@ -29,8 +32,18 @@ export class GifsService {
 
   buscarGifs(query: string) {
 
+    // Para crear una baseUrl
+    const params = new HttpParams()
+      .set('api_key', this.apiKey)
+      .set('limit', '10')
+      .set('q', query);
+
+    console.log("Esto son los params",params.toString()); // lo pasamos a string para que pierda la forma del objeto y tome de url
+    
+
     // Manda la peticion a la API y lo almacenamos en la variable resultados (Esto es lo que estaria en el flux)
-    this.http.get<SearchGifsResponse>(`https://api.giphy.com/v1/gifs/search?api_key=CFZ9grM87gaiStZ3XycDqRsjc9f1Bv5p&q=${query}&limit=10`)
+    // this.http.get<SearchGifsResponse>(`https://api.giphy.com/v1/gifs/search?api_key=CFZ9grM87gaiStZ3XycDqRsjc9f1Bv5p&q=${query}&limit=10`)
+    this.http.get<SearchGifsResponse>(`${this.servicioUrl}/search`, {params})
     .subscribe((response) => { 
       // console.log(response.data);
       this.resultados = response.data
