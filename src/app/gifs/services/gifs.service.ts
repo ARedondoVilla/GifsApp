@@ -18,7 +18,11 @@ export class GifsService {
     return [...this._historial];
   }
 
-  constructor(private http:HttpClient) {}
+  constructor(private http:HttpClient) {
+    if (localStorage.getItem('Historial')) {
+      this._historial = JSON.parse(localStorage.getItem('Historial')!) // El ! se usa para saltar el error de tipado de Typescript, ya que tiene una validacion anterior
+    }
+  }
 
   buscarGifs(query: string) {
     
@@ -31,6 +35,8 @@ export class GifsService {
     this._historial.unshift(query);
 
     this._historial = this._historial.splice(0,9); // Para que solo aparezcan los ultimos 10 elementos buscados
+
+    localStorage.setItem('Historial', JSON.stringify(this._historial))
 
     console.log(this._historial);
 
