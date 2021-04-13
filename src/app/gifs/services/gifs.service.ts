@@ -7,8 +7,6 @@ import { Data, SearchGifsResponse } from '../interface/gifs.interface';
 })
 export class GifsService {
 
-  private apiKey: string = "CFZ9grM87gaiStZ3XycDqRsjc9f1Bv5p";
-
   private _historial: string[] = [];
 
   public resultados: Data[] = [];
@@ -19,13 +17,36 @@ export class GifsService {
   }
 
   constructor(private http:HttpClient) {
+
     if (localStorage.getItem('Historial')) {
       this._historial = JSON.parse(localStorage.getItem('Historial')!) // El ! se usa para saltar el error de tipado de Typescript, ya que tiene una validacion anterior
+    }
+
+    if (localStorage.getItem('Resultados')) {
+      this.resultados = JSON.parse(localStorage.getItem('Resultados')!) // El ! se usa para saltar el error de tipado de Typescript, ya que tiene una validacion anterior
     }
   }
 
   buscarGifs(query: string) {
+
+    // Manda la peticion a la API y lo almacenamos en la variable resultados (Esto es lo que estaria en el flux)
+    this.http.get<SearchGifsResponse>(`https://api.giphy.com/v1/gifs/search?api_key=CFZ9grM87gaiStZ3XycDqRsjc9f1Bv5p&q=${query}&limit=10`)
+    .subscribe((response) => { 
+      // console.log(response.data);
+      this.resultados = response.data
+      console.log(this.resultados);
+      localStorage.setItem('Resultados', JSON.stringify(this.resultados))
+    });
+
+    // fetch('https://api.giphy.com/v1/gifs/search?api_key=CFZ9grM87gaiStZ3XycDqRsjc9f1Bv5p&q=ironman&limit=10')
+    // .then(response => {
+    //   response.json().then(data => {
+    //     console.log(data.data);
+    //   })
+    // })
     
+
+    // Modifica la variabl de entrada y la inserta dentro del historial de busqueda
     query = query.trim().toLowerCase();
 
     if (this._historial.includes(query)) {
@@ -38,22 +59,7 @@ export class GifsService {
 
     localStorage.setItem('Historial', JSON.stringify(this._historial))
 
-    console.log(this._historial);
-
-    // fetch('https://api.giphy.com/v1/gifs/search?api_key=CFZ9grM87gaiStZ3XycDqRsjc9f1Bv5p&q=ironman&limit=10')
-    // .then(response => {
-    //   response.json().then(data => {
-    //     console.log(data.data);
-    //   })
-    // })
-
-    this.http.get<SearchGifsResponse>(`https://api.giphy.com/v1/gifs/search?api_key=CFZ9grM87gaiStZ3XycDqRsjc9f1Bv5p&q=${query}&limit=10`)
-    .subscribe((response) => { 
-      // console.log(response.data);
-      this.resultados = response.data
-      console.log(this.resultados);
-      
-    });
+    console.log(this._historial);  
 
   }
 
